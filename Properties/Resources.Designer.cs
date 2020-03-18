@@ -91,7 +91,7 @@ namespace V2RayShell.Properties {
         ///Update Local PAC from GFWList=从 GFWList 更新本地 PAC
         ///Edit User Rule for GFWList...=编辑 GFWList 的用户规则...
         ///Copy Local PAC URL=复制本地 PAC 网址
-        ///        /// [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///S [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string cn {
             get {
@@ -133,6 +133,36 @@ namespace V2RayShell.Properties {
             get {
                 object obj = ResourceManager.GetObject("proxy_pac_txt", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap T18 {
+            get {
+                object obj = ResourceManager.GetObject("T18", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap T24 {
+            get {
+                object obj = ResourceManager.GetObject("T24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap T48 {
+            get {
+                object obj = ResourceManager.GetObject("T48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

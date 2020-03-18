@@ -20,7 +20,7 @@ namespace V2RayShell
         static void Main()
         {
             Utils.ReleaseMemory(true);
-            using (Mutex mutex = new Mutex(false, "Global\\V2RayShell_" + Application.StartupPath.GetHashCode()))
+            using (Mutex mutex = new Mutex(false, "Global\\V2RayShell_" + Global.PathHash))
             {
                 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
                 Application.ThreadException += Application_ThreadException;
@@ -43,6 +43,8 @@ namespace V2RayShell
                         I18N.GetString("V2RayShell is already running."));
                     return;
                 }
+
+                Directory.SetCurrentDirectory(Global.AppPath);
 
                 Logging.OpenLogFile();
                 //check

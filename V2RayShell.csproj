@@ -229,6 +229,9 @@
   <ItemGroup>
     <None Include="Resources\privoxy_conf.txt" />
     <None Include="Resources\user-rule.txt" />
+    <None Include="Resources\T18.png" />
+    <None Include="Resources\T24.png" />
+    <None Include="Resources\T48.png" />
     <Content Include="v2ray.ico" />
   </ItemGroup>
   <ItemGroup>

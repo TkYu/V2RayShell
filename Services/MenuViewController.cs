@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +50,9 @@ namespace V2RayShell.Services
         private string _urlToOpen;
         private UpdateChecker updateChecker;
 
+        private Bitmap iconBase;
+        private Icon trayIcon;
+
         public MenuViewController(V2RayShellController controller)
         {
             this.controller = controller;
@@ -91,6 +95,81 @@ namespace V2RayShell.Services
             }
         }
 
+        private void UpdateTrayIcon()
+        {
+            int dpi;
+            using (var graphics = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                dpi = (int)graphics.DpiX;
+            }
+            iconBase = null;
+            if (dpi < 96)
+            {
+                //72
+                iconBase = Resources.T18;
+            }
+            else if (dpi < 192)
+            {
+                //96
+                iconBase = Resources.T24;
+            }
+            else
+            {
+                //192
+                iconBase = Resources.T48;
+            }
+            var config = controller.GetConfigurationCopy();
+            var enabled = config.enabled;
+            var global = config.global;
+            iconBase = getTrayIconByState(iconBase, enabled, global);
+            trayIcon = Icon.FromHandle(iconBase.GetHicon());
+            _notifyIcon.Icon = trayIcon;
+
+            var serverInfo = config.GetCurrentServer().ps;
+            var text = I18N.GetString("V2RayShell") + " " + Global.Version + "\n" +
+                       (enabled ?
+                           I18N.GetString("System Proxy On: ") + (global ? I18N.GetString("Global") : I18N.GetString("PAC")) :
+                           String.Format(I18N.GetString("Running: Port {0}"), $"{config.corePort}/{config.localPort}"))
+                       + "\n" + serverInfo;
+            _notifyIcon.SetNotifyIconText(text);
+        }
+
+        private Bitmap getTrayIconByState(Bitmap originIcon, bool enabled, bool global)
+        {
+            Bitmap iconCopy = new Bitmap(originIcon);
+            for (int x = 0; x < iconCopy.Width; x++)
+            {
+                for (int y = 0; y < iconCopy.Height; y++)
+                {
+                    Color color = originIcon.GetPixel(x, y);
+                    if (color.A != 0)
+                    {
+                        if (!enabled)
+                        {
+                            Color flyBlue = Color.FromArgb(146, 146, 146);
+                            int red = color.R * flyBlue.R / 255;
+                            int green = color.G * flyBlue.G / 255;
+                            int blue = color.B * flyBlue.B / 255;
+                            iconCopy.SetPixel(x, y, Color.FromArgb(color.A, red, green, blue));
+                        }
+                        else if (global)
+                        {
+                            Color flyBlue = Color.FromArgb(84, 125, 248);
+                            int red   = color.R * flyBlue.R / 255;
+                            int green = color.G * flyBlue.G / 255;
+                            int blue  = color.B * flyBlue.B / 255;
+                            iconCopy.SetPixel(x, y, Color.FromArgb(color.A, red, green, blue));
+                        }
+                    }
+                    else
+                    {
+                        iconCopy.SetPixel(x, y, Color.FromArgb(color.A, color.R, color.G, color.B));
+                    }
+                }
+            }
+            return iconCopy;
+        }
+
         private async void CheckUpdate(Configuration config,bool noFoundNotify = false)
         {
             var result = await updateChecker.CheckUpdate(config);
@@ -114,21 +193,6 @@ namespace V2RayShell.Services
             }
             if(noFoundNotify)
                 ShowBalloonTip(I18N.GetString("V2RayShell"), I18N.GetString("No update is available"), ToolTipIcon.Info, 5000);
-        }
-
-        private void UpdateTrayIcon()
-        {
-            _notifyIcon.Icon = Resources.v2ray;
-            Configuration config = controller.GetConfigurationCopy();
-            bool enabled = config.enabled;
-            bool global = config.global;
-            string serverInfo = config.GetCurrentServer().ps;
-            string text = I18N.GetString("V2RayShell") + " " + Global.Version + "\n" +
-                          (enabled ?
-                              I18N.GetString("System Proxy On: ") + (global ? I18N.GetString("Global") : I18N.GetString("PAC")) :
-                              String.Format(I18N.GetString("Running: Port {0}"), $"{config.corePort}/{config.localPort}"))
-                          + "\n" + serverInfo;
-            _notifyIcon.SetNotifyIconText(text);
         }
 
         public void ShowBalloonTip(string title, string content, ToolTipIcon icon = ToolTipIcon.Info, int timeout = 1000)

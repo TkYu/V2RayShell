@@ -56,7 +56,7 @@ namespace V2RayShell.Services
 
         public int RunningPort { get; private set; }
 
-        public PACServer():base(100,Int16.MaxValue)
+        public PACServer():base(10,Int16.MaxValue)
         {
             Process = ProcessMethod;
             RunningPort = Utils.GetRandomPort();

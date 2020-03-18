@@ -5,7 +5,7 @@ V2RayShell=V2射线壳
 # Menu items
 Enable System Proxy=启用系统代理
 Mode=系统代理模式
-PAC=PAC 模式
+PAC=PAC模式
 Global=全局模式
 Servers=服务器
 Edit Servers...=编辑服务器...
