@@ -1,0 +1,140 @@
+# translation for Simplified Chinese
+
+V2RayShell=V2射线壳
+
+# Menu items
+Enable System Proxy=启用系统代理
+Mode=系统代理模式
+PAC=PAC 模式
+Global=全局模式
+Servers=服务器
+Edit Servers...=编辑服务器...
+Share Server Config...=分享服务器配置...
+Scan QRCode from Screen...=扫描屏幕上的二维码...
+Import URL from Clipboard...=从剪贴板导入URL...
+Local PAC=使用本地 PAC
+Online PAC=使用在线 PAC
+Edit Local PAC File...=编辑本地 PAC 文件...
+Update Local PAC from GFWList=从 GFWList 更新本地 PAC
+Edit User Rule for GFWList...=编辑 GFWList 的用户规则...
+Copy Local PAC URL=复制本地 PAC 网址
+Start on Boot=开机启动
+Allow Clients from LAN=局域网共享
+Subscriptions...=查看订阅...
+Edit Hotkeys...=编辑快捷键...
+Help=帮助
+Show Logs...=显示日志...
+Show Access Logs...=显示V2Ray访问日志...
+Show Error Logs...=显示V2Ray错误日志...
+Verbose Logging=详细记录日志
+
+Updates...=更新...
+Check for Updates...=检查更新
+Check for Updates at Startup=启动时检查更新
+
+About...=关于...
+
+Quit=退出
+
+Edit Servers=编辑服务器
+Busy...=稍等...
+
+# QR Form
+
+QRCode and URL=二维码与 URL
+
+# HotkeySettings Form
+
+Add current Chrome domain to PAC=添加当前ChromeTab的域名到PAC
+Add current Chrome url to PAC=添加当前ChromeTab的地址到PAC
+Scan QRCode=读取屏幕二维码
+Switch system proxy=切换系统代理状态
+Switch system proxy mode=切换系统代理模式
+Switch share over LAN=切换局域网共享
+Show Logs=显示日志
+Switch to prev server=切换上个服务器
+Switch to next server=切换下个服务器
+Reg All=注册全部热键
+
+# Log Form
+
+&File=文件(&F)
+&Open Location=在资源管理器中打开(&O)
+E&xit=退出(&X)
+&Clean logs=清空日志(&C)
+Change &Font=设置字体(&F)
+&Wrap text=自动换行(&W)
+&Top most=置顶(&T)
+Log Viewer=日志查看器
+
+# Subscribe Form
+
+Subscriptions...=管理订阅...
+Subscribe=订阅
+Edit Subscriptions=编辑订阅
+UseProxy=使用代理
+Url=链接
+Subscribe Name=订阅名称
+
+# Config Form
+
+&Add=添加(&A)
+&Delete=删除(&D)
+Dupli&cate=复制(&C)
+Cli&pboard=剪贴板(&P)
+Server=服务器
+Proxy Port=代理端口
+Remarks=备注
+OK=确定
+Cancel=取消
+Move &Up=上移(&U)
+Move D&own=下移(&O)
+New Config=新的配置
+Server Address=服务地址
+Server Port=服务端口
+Trans Protocol=传输协议
+Camouflage Type=伪装类型
+AlterId=额外ID(alterId)
+Camouflage Domain=伪装域名(host)
+Camouflage Path=伪装路径(path)
+Security=传输层加密
+Core Port=V2 Socks 端口
+
+Please add at least one server=请添加至少一个服务器
+
+# Messages
+
+V2RayShell is here=V2射线壳 在这里
+You can turn on/off V2RayShell in the context menu=可以在右键菜单中开启或关闭 V2射线壳
+No QRCode found. Try to zoom in or move it to the center of the screen.=未发现二维码，尝试把它放大或移动到靠近屏幕中间的位置
+Current QR content is=当前读取到QR码的内容为
+should i open it?=是否打开？
+should i copy that to clipboard?=是否复制到剪贴板？
+V2RayShell is already running.=V2射线壳 已经在运行。
+Find V2RayShell icon in your notify tray.=请在任务栏里寻找 V2射线壳 图标。
+If you want to start multiple V2RayShell, make a copy in another directory.=如果想同时启动多个V2射线壳，可以另外复制一份到别的目录。
+Failed to update PAC file =更新 PAC 文件失败
+PAC updated=更新 PAC 成功
+No updates found. Please report to GFWList if you have problems with it.=未发现更新。如有问题请提交给 GFWList。
+Unexpected error, V2RayShell will exit. Please report to=未知错误，V2射线壳将退出，前往讨论区讨论：
+v2ray.exe -version parse fail!=v2ray.exe -version 获取失败
+V2RayShell Error:=V2射线壳出错：
+Sit back and relax=坐和放宽
+Get latest version...=正在获取最新版本的信息...
+Upgrade {0} to {1} ...=从 {0} 升级到 {1} ...
+Downloading file from {0}, You can download it manually and extract to same folder.=正在从 {0} 下载V2射线壳核心，你也可以使用其他渠道手动下载后解压到本程序相同路径。
+We need a proxy to download v2ray core=访问GitHub失败，请提供一个代理以供访问
+download fail!=下载失败！
+Downloading...=正在下载...
+Extracting...=正在解压...
+Port out of range=端口超出范围
+Port can't be 8123=端口不能为 8123
+Server can not be blank=服务器地址不能为空
+assertion failure=断言失败
+user rule has been added=用户规则已添加
+user rule has been removed=用户规则已移除
+V2RayShell Update Found :=V2射线壳有新版本：
+V2RayCore Update Found :=V2射线有新版本：
+V2RayShell and V2RayCore Update Found :=V2射线壳与核心都有新版本：
+Click here to update=点我前往更新页
+No update is available=没有找到更新

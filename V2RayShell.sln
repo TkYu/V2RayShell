@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V2RayShell", "V2RayShell.csproj", "{021E57CF-CD4F-4641-95FD-373567A6FF07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{021E57CF-CD4F-4641-95FD-373567A6FF07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{021E57CF-CD4F-4641-95FD-373567A6FF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{021E57CF-CD4F-4641-95FD-373567A6FF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{021E57CF-CD4F-4641-95FD-373567A6FF07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8808CA29-A025-4489-BA56-5DF2F044B817}
+	EndGlobalSection
+EndGlobal

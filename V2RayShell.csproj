@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{021E57CF-CD4F-4641-95FD-373567A6FF07}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>V2RayShell</RootNamespace>
+    <AssemblyName>V2RayShell</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>v2ray.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationClient" />
+    <Reference Include="UIAutomationTypes" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="3rd\SimpleJson.cs" />
+    <Compile Include="3rd\zxing\BarcodeFormat.cs" />
+    <Compile Include="3rd\zxing\BaseLuminanceSource.cs" />
+    <Compile Include="3rd\zxing\Binarizer.cs" />
+    <Compile Include="3rd\zxing\BinaryBitmap.cs" />
+    <Compile Include="3rd\zxing\BitmapLuminanceSource.cs" />
+    <Compile Include="3rd\zxing\common\BitArray.cs" />
+    <Compile Include="3rd\zxing\common\BitMatrix.cs" />
+    <Compile Include="3rd\zxing\common\BitSource.cs" />
+    <Compile Include="3rd\zxing\common\DecoderResult.cs" />
+    <Compile Include="3rd\zxing\common\DefaultGridSampler.cs" />
+    <Compile Include="3rd\zxing\common\DetectorResult.cs" />
+    <Compile Include="3rd\zxing\common\detector\MathUtils.cs" />
+    <Compile Include="3rd\zxing\common\GlobalHistogramBinarizer.cs" />
+    <Compile Include="3rd\zxing\common\GridSampler.cs" />
+    <Compile Include="3rd\zxing\common\HybridBinarizer.cs" />
+    <Compile Include="3rd\zxing\common\PerspectiveTransform.cs" />
+    <Compile Include="3rd\zxing\common\reedsolomon\GenericGF.cs" />
+    <Compile Include="3rd\zxing\common\reedsolomon\GenericGFPoly.cs" />
+    <Compile Include="3rd\zxing\common\reedsolomon\ReedSolomonDecoder.cs" />
+    <Compile Include="3rd\zxing\common\reedsolomon\ReedSolomonEncoder.cs" />
+    <Compile Include="3rd\zxing\common\StringUtils.cs" />
+    <Compile Include="3rd\zxing\DecodeHintType.cs" />
+    <Compile Include="3rd\zxing\EncodeHintType.cs" />
+    <Compile Include="3rd\zxing\LuminanceSource.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\BitMatrixParser.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\DataBlock.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\DataMask.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\DecodedBitStreamParser.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\Decoder.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\ErrorCorrectionLevel.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\FormatInformation.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\Mode.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\QRCodeDecoderMetaData.cs" />
+    <Compile Include="3rd\zxing\qrcode\decoder\Version.cs" />
+    <Compile Include="3rd\zxing\qrcode\detector\AlignmentPattern.cs" />
+    <Compile Include="3rd\zxing\qrcode\detector\AlignmentPatternFinder.cs" />
+    <Compile Include="3rd\zxing\qrcode\detector\Detector.cs" />
+    <Compile Include="3rd\zxing\qrcode\detector\FinderPattern.cs" />
+    <Compile Include="3rd\zxing\qrcode\detector\FinderPatternFinder.cs" />
+    <Compile Include="3rd\zxing\qrcode\detector\FinderPatternInfo.cs" />
+    <Compile Include="3rd\zxing\qrcode\encoder\BlockPair.cs" />
+    <Compile Include="3rd\zxing\qrcode\encoder\ByteMatrix.cs" />
+    <Compile Include="3rd\zxing\qrcode\encoder\Encoder.cs" />
+    <Compile Include="3rd\zxing\qrcode\encoder\MaskUtil.cs" />
+    <Compile Include="3rd\zxing\qrcode\encoder\MatrixUtil.cs" />
+    <Compile Include="3rd\zxing\qrcode\encoder\QRCode.cs" />
+    <Compile Include="3rd\zxing\qrcode\QRCodeReader.cs" />
+    <Compile Include="3rd\zxing\Result.cs" />
+    <Compile Include="3rd\zxing\ResultMetadataType.cs" />
+    <Compile Include="3rd\zxing\ResultPoint.cs" />
+    <Compile Include="3rd\zxing\ResultPointCallback.cs" />
+    <Compile Include="3rd\zxing\WriterException.cs" />
+    <Compile Include="Model\Configuration.cs" />
+    <Compile Include="Model\HotkeyConfig.cs" />
+    <Compile Include="Model\SubscribeConfig.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\GFWListUpdater.cs" />
+    <Compile Include="Services\MenuViewController.cs" />
+    <Compile Include="Services\PACServer.cs" />
+    <Compile Include="Services\PrivoxyRunner.cs" />
+    <Compile Include="Services\SimpleTcpServer.cs" />
+    <Compile Include="Services\UpdateChecker.cs" />
+    <Compile Include="Services\V2RayRunner.cs" />
+    <Compile Include="Services\V2RayShellController.cs" />
+    <Compile Include="Utils\AutoStartup.cs" />
+    <Compile Include="Utils\FileManager.cs" />
+    <Compile Include="Utils\Global.cs" />
+    <Compile Include="Utils\Hotkeys\HotkeyCallbacks.cs" />
+    <Compile Include="Utils\Hotkeys\HotKeyManager.cs" />
+    <Compile Include="Utils\Hotkeys\Hotkeys.cs" />
+    <Compile Include="Utils\I18N.cs" />
+    <Compile Include="Utils\Job.cs" />
+    <Compile Include="Utils\Logging.cs" />
+    <Compile Include="Utils\SystemProxy.cs" />
+    <Compile Include="Utils\Utils.cs" />
+    <Compile Include="Utils\V2Ray.cs" />
+    <Compile Include="View\ConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\ConfigForm.Designer.cs">
+      <DependentUpon>ConfigForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\DownloadProgress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\DownloadProgress.Designer.cs">
+      <DependentUpon>DownloadProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\HotkeySettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\HotkeySettingsForm.Designer.cs">
+      <DependentUpon>HotkeySettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\LogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\LogForm.Designer.cs">
+      <DependentUpon>LogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\QRCodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\QRCodeForm.Designer.cs">
+      <DependentUpon>QRCodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\QRCodeSplashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\SubscribeConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\SubscribeConfigForm.Designer.cs">
+      <DependentUpon>SubscribeConfigForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="View\ConfigForm.resx">
+      <DependentUpon>ConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\DownloadProgress.resx">
+      <DependentUpon>DownloadProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\HotkeySettingsForm.resx">
+      <DependentUpon>HotkeySettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\LogForm.resx">
+      <DependentUpon>LogForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\QRCodeForm.resx">
+      <DependentUpon>QRCodeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\SubscribeConfigForm.resx">
+      <DependentUpon>SubscribeConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Resources\abp.js.gz" />
+    <None Include="Resources\privoxy.exe.gz" />
+    <None Include="Resources\proxy.pac.txt.gz" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\privoxy_conf.txt" />
+    <None Include="Resources\user-rule.txt" />
+    <Content Include="v2ray.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cn.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
