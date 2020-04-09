@@ -170,7 +170,7 @@ namespace V2RayShell.View
                 //ChangeText(newVersion + I18N.GetString("Downloading...") + $" {e.ProgressPercentage}%");
             };
             var fileName = Utils.GetTempPath(Guid.NewGuid().ToString("N"));
-            var downloadURL = $"https://cdn.jsdelivr.net/gh/v2ray/dist/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";//God Bless You
+            var downloadURL = $"https://cdn.jsdelivr.net/gh/v2ray/dist@{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";//God Bless You
             if (!string.IsNullOrEmpty(proxy)) downloadURL = $"https://github.com/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
             ChangeTitle(I18N.GetString("Sit back and relax") + " " + I18N.GetString("Upgrade {0} to {1} ...", V2Ray.Version?.ToString() ?? "0.0.0", newVersion));
             ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
