@@ -220,7 +220,6 @@ public partial class SubscribeConfigForm : Form
                 var current = _modifiedConfiguration.subscribes[_lastSelectedIndex];
                 _modifiedConfiguration.configs.RemoveAll(c => c.@group == current.name);
                 _modifiedConfiguration.subscribes.RemoveAt(_lastSelectedIndex);
-                _controller.SaveServers(_modifiedConfiguration.configs, _modifiedConfiguration.localPort,_modifiedConfiguration.corePort);
 
             }
             if (_lastSelectedIndex >= _modifiedConfiguration.subscribes.Count)
