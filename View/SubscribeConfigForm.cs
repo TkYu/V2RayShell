@@ -149,7 +149,7 @@ public partial class SubscribeConfigForm : Form
                     }
                     else
                     {
-                        var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
+                        var debase64 = downloadString.DeBase64();
                         var split = debase64.Split('\r', '\n');
                         foreach (var s in split)
                         {
@@ -217,7 +217,11 @@ public partial class SubscribeConfigForm : Form
             _lastSelectedIndex = SubscribeListBox.SelectedIndex;
             if (_lastSelectedIndex >= 0 && _lastSelectedIndex < _modifiedConfiguration.subscribes.Count)
             {
+                var current = _modifiedConfiguration.subscribes[_lastSelectedIndex];
+                _modifiedConfiguration.configs.RemoveAll(c => c.@group == current.name);
                 _modifiedConfiguration.subscribes.RemoveAt(_lastSelectedIndex);
+                _controller.SaveServers(_modifiedConfiguration.configs, _modifiedConfiguration.localPort,_modifiedConfiguration.corePort);
+
             }
             if (_lastSelectedIndex >= _modifiedConfiguration.subscribes.Count)
             {

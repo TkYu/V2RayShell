@@ -480,7 +480,7 @@ namespace V2RayShell.Services
                 }
                 else
                 {
-                    var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
+                    var debase64 = downloadString.DeBase64();
                     var split = debase64.Split('\r', '\n');
                     foreach (var s in split)
                     {

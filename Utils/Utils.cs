@@ -49,6 +49,33 @@ namespace V2RayShell
         }
 
         #region Method
+        public static string DeBase64(this string str, Encoding encoding = null)
+        {
+            return (encoding??Encoding.UTF8).GetString(Convert.FromBase64String(str.Rfc4648Base64UrlDecode()));
+        }
+
+        public static string Rfc4648Base64UrlDecode(this string str)
+        {
+            str = str.Replace('-', '+').Replace('_', '/');
+            switch (str.Length % 4)
+            { // Pad with trailing '='s
+                case 0:
+                    // No pad chars in this case
+                    break;
+                case 2:
+                    // Two pad chars
+                    str += "==";
+                    break;
+                case 3:
+                    // One pad char
+                    str += "=";
+                    break;
+                default:
+                    throw new Exception("Invalid string.");
+            }
+            return str;
+        }
+
         public static IEnumerable<TControl> GetChildControls<TControl>(this Control control) where TControl : Control
         {
             if (control.Controls.Count == 0) return Enumerable.Empty<TControl>();
