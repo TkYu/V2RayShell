@@ -15,6 +15,10 @@ namespace V2RayShell
         public static readonly string ProcessPath;
         public static readonly string ProcessName;
         public static readonly int PathHash;
+
+        public static readonly System.Drawing.Font Font;
+        public static readonly string CurrentCulture;
+
         static Global()
         {
             Version = Application.ProductVersion;
@@ -23,6 +27,17 @@ namespace V2RayShell
             AppPath = Path.GetDirectoryName(ProcessPath);
             ProcessName = Path.GetFileNameWithoutExtension(ProcessPath);
             ConfigPath = Utils.GetTempPath($"V2RayShell_{Application.StartupPath.GetHashCode()}.json");
+
+            #if DEBUG
+            CurrentCulture = "zh-cn";
+            #else
+            CurrentCulture = System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag.ToLowerInvariant();
+            #endif
+
+            if (CurrentCulture.StartsWith("zh"))
+                Font = new System.Drawing.Font("Microsoft Yahei UI", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            else
+                Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
         }
     }
 }

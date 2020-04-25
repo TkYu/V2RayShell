@@ -34,6 +34,7 @@ namespace V2RayShell.Services
         private MenuItem editGFWUserRuleItem;
         private MenuItem autoCheckUpdatesToggleItem;
         private MenuItem hotKeyItem;
+        private MenuItem subscribeUpdateItem;
         private MenuItem VerboseLoggingToggleItem;
         public MenuItem ScanQR;
         public MenuItem ShowLog;
@@ -93,6 +94,11 @@ namespace V2RayShell.Services
             {
                 CheckUpdate(config);
             }
+        }
+
+        public void HideTray()
+        {
+            this._notifyIcon.Visible = false;
         }
 
         private void UpdateTrayIcon()
@@ -255,6 +261,8 @@ namespace V2RayShell.Services
                 ShareOverLANItem = CreateMenuItem("Allow Clients from LAN", ShareOverLANItem_Click),
                 new MenuItem("-"),
                 CreateMenuItem("Subscriptions...", subscribeItem_Click),
+                subscribeUpdateItem = CreateMenuItem("Update Subscriptions", subscribeUpdateItem_Click),
+                new MenuItem("-"),
                 hotKeyItem = CreateMenuItem("Edit Hotkeys...", new EventHandler(hotKeyItem_Click)),
                 CreateMenuGroup("Help", new MenuItem[] {
                     ShowLog = CreateMenuItem("Show Logs...", ShowLogItem_Click),
@@ -339,13 +347,15 @@ namespace V2RayShell.Services
         {
             if (updateflag == 1)
             {
-                updateflag = 0; /* Reset the flag */
-                System.Diagnostics.Process.Start(UpdateChecker.SHELL_URL);
+                updateflag = 0;
+                var download = new DownloadProgress(1);
+                var dg = download.ShowDialog();
+                if (dg == DialogResult.Abort || dg == DialogResult.Cancel) MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else if (updateflag == 2)
             {
                 updateflag = 0;
-                var download = new DownloadProgress();
+                var download = new DownloadProgress(2);
                 var dg = download.ShowDialog();
                 if (dg == DialogResult.Abort || dg == DialogResult.Cancel) MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 controller.RestartCore();
@@ -353,8 +363,7 @@ namespace V2RayShell.Services
             else if (updateflag == 3)
             {
                 updateflag = 0;
-                System.Diagnostics.Process.Start(UpdateChecker.SHELL_URL);
-                var download = new DownloadProgress();
+                var download = new DownloadProgress(3);
                 var dg = download.ShowDialog();
                 if (dg == DialogResult.Abort || dg == DialogResult.Cancel) MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 controller.RestartCore();
@@ -441,6 +450,41 @@ namespace V2RayShell.Services
         private void subscribeItem_Click(object sender, EventArgs e)
         {
             ShowSubscribeForm();
+        }
+
+        private async void subscribeUpdateItem_Click(object sender, EventArgs e)
+        {
+            var config = controller.GetConfigurationCopy();
+            if (config.subscribes == null || !config.subscribes.Any()) return;
+            subscribeUpdateItem.Enabled = false;
+            var before = config.configs.Count(c => !string.IsNullOrEmpty(c.@group));
+            foreach (var item in config.subscribes)
+            {
+                var wc = new System.Net.WebClient();
+                if (item.useProxy) wc.Proxy = new System.Net.WebProxy(System.Net.IPAddress.Loopback.ToString(), config.localPort);
+                var downloadString = await wc.DownloadStringTaskAsync(item.url);
+                wc.Dispose();
+                var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
+                var split = debase64.Split('\r', '\n');
+                var lst = new List<ServerObject>();
+                foreach (var s in split)
+                {
+                    if (ServerObject.TryParse(s, out ServerObject svc))
+                    {
+                        svc.@group = item.name;
+                        lst.Add(svc);
+                    }
+                }
+                if (lst.Any())
+                {
+                    config.configs.RemoveAll(c => c.@group == item.name);
+                    config.configs.AddRange(lst);
+                }
+            }
+            controller.SaveServers(config.configs, config.localPort,config.corePort);
+            var after = config.configs.Count(c => !string.IsNullOrEmpty(c.@group));
+            ShowBalloonTip(I18N.GetString("Update finished"), I18N.GetString("{0} before, {1} after.", before, after));
+            subscribeUpdateItem.Enabled = true;
         }
 
         private void EditPACFileItem_Click(object sender, EventArgs e)

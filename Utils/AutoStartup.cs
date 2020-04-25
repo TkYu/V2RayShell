@@ -14,16 +14,25 @@ namespace V2RayShell
         {
             try
             {
-                RegistryKey runKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+                var kNameWithHash = $"{KEY_NAME}_{Global.PathHash}";
+                var runKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+                if (runKey == null) return false;
+                var runList = runKey.GetValueNames();
                 if (enabled)
                 {
-                    runKey?.SetValue(KEY_NAME, Global.ProcessPath);
+                    if(runList.Any(c=>c == KEY_NAME) && !runKey.GetValue(KEY_NAME).ToString().Equals(Global.ProcessPath))
+                        runKey.SetValue(kNameWithHash, Global.ProcessPath);
+                    else
+                        runKey.SetValue(KEY_NAME, Global.ProcessPath);
                 }
                 else
                 {
-                    runKey?.DeleteValue(KEY_NAME);
+                    if (runList.Any(c => c == kNameWithHash))
+                        runKey.DeleteValue(kNameWithHash);
+                    else
+                        runKey.DeleteValue(KEY_NAME);
                 }
-                runKey?.Close();
+                runKey.Close();
                 return true;
             }
             catch (Exception e)
@@ -37,15 +46,16 @@ namespace V2RayShell
         {
             try
             {
-                RegistryKey runKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
-                string[] runList = runKey?.GetValueNames();
-                runKey?.Close();
-                if (runList == null || runList.Length == 0) return false;
-                foreach (string item in runList)
-                {
-                    if (item.Equals(KEY_NAME))
-                        return true;
-                }
+                var kNameWithHash = $"{KEY_NAME}_{Global.PathHash}";
+                var runKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
+                if (runKey == null) return false;
+                string fName = runKey.GetValue(KEY_NAME)?.ToString();
+                string pName = runKey.GetValue(kNameWithHash)?.ToString();
+                runKey.Close();
+                if (pName != null && pName.Equals(Global.ProcessPath,StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if (fName != null && fName.Equals(Global.ProcessPath, StringComparison.OrdinalIgnoreCase))
+                    return true;
                 return false;
             }
             catch (Exception e)

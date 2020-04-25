@@ -62,7 +62,7 @@ namespace V2RayShell
                 else
                 {
                     //need do sth
-                    var download = new DownloadProgress();
+                    var download = new DownloadProgress(2);
                     var result = download.ShowDialog();
                     if (result == DialogResult.Abort || result == DialogResult.Cancel)
                     {
@@ -72,13 +72,16 @@ namespace V2RayShell
                     Logging.Info("V2RayCore version : " + V2Ray.Version);
                 }
 
-                var controller = new V2RayShellController();
-                var viewController = new MenuViewController(controller);
-                Hotkeys.HotKeys.Init(controller, viewController);
-                controller.StartAsync();
+                ControllerInstance = new V2RayShellController();
+                ViewControllerInstance = new MenuViewController(ControllerInstance);
+                Hotkeys.HotKeys.Init(ControllerInstance, ViewControllerInstance);
+                ControllerInstance.StartAsync();
                 Application.Run();
             }
         }
+
+        public static V2RayShellController ControllerInstance;
+        public static MenuViewController ViewControllerInstance;
 
         #region HandleExceptions
 

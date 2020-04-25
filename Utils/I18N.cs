@@ -16,9 +16,7 @@ namespace V2RayShell
         {
             Strings = new Dictionary<string, string>();
 
-#if !DEBUG
-            if (System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag.ToLowerInvariant().StartsWith("zh"))
-#endif
+            if (Global.CurrentCulture.StartsWith("zh"))
             {
                 string[] lines = Resources.cn.Split('\r','\n');
                 foreach (string line in lines)

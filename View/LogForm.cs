@@ -30,6 +30,7 @@ public partial class LogForm : Form
 
         private void UpdateTexts()
         {
+            Font = Global.Font;
             FileMenuItem.Text = I18N.GetString("&File");
             OpenLocationMenuItem.Text = I18N.GetString("&Open Location");
             ExitMenuItem.Text = I18N.GetString("E&xit");
@@ -37,7 +38,7 @@ public partial class LogForm : Form
             ChangeFontButton.Text = I18N.GetString("Change &Font");
             WrapTextCheckBox.Text = I18N.GetString("&Wrap text");
             TopMostCheckBox.Text = I18N.GetString("&Top most");
-            this.Text = I18N.GetString("Log Viewer");
+            Text = I18N.GetString("Log Viewer");
         }
 
         private void Timer_Tick(object sender, EventArgs e)

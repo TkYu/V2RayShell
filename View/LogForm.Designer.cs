@@ -174,7 +174,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1185, 828);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Font = new System.Drawing.Font("Microsoft Yahei", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.Menu = this.mainMenu1;
             this.Name = "LogForm";

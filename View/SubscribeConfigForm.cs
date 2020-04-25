@@ -38,6 +38,7 @@ public partial class SubscribeConfigForm : Form
 
         private void UpdateTexts()
         {
+            Font = Global.Font;
             AddButton.Text = I18N.GetString("&Add");
             DeleteButton.Text = I18N.GetString("&Delete");
             SubscribeGroupBox.Text = I18N.GetString("Subscribe");
@@ -75,6 +76,7 @@ public partial class SubscribeConfigForm : Form
             }
         }
 
+        Dictionary<int,string> oldNames = new Dictionary<int, string>();
         private bool SaveOld()
         {
             try
@@ -84,6 +86,10 @@ public partial class SubscribeConfigForm : Form
                     return true;
                 }
                 var item = new SubscribeConfig{name = NameTextBox.Text,url = UrlTextBox.Text,useProxy = UseProxyCheckBox.Checked};
+                if (!oldNames.ContainsKey(_lastSelectedIndex))
+                    oldNames.Add(_lastSelectedIndex, _modifiedConfiguration.subscribes[_lastSelectedIndex].name);
+                else
+                    oldNames[_lastSelectedIndex] = _modifiedConfiguration.subscribes[_lastSelectedIndex].name;
                 _modifiedConfiguration.subscribes[_lastSelectedIndex] = item;
 
                 return true;
@@ -106,7 +112,7 @@ public partial class SubscribeConfigForm : Form
             }
         }
 
-        private void OKButton_Click(object sender, EventArgs e)
+        private async void OKButton_Click(object sender, EventArgs e)
         {
             if (!SaveOld())
             {
@@ -124,7 +130,7 @@ public partial class SubscribeConfigForm : Form
                     var item = _modifiedConfiguration.subscribes[_lastSelectedIndex];
                     var wc = new WebClient();
                     if (item.useProxy) wc.Proxy = new WebProxy(IPAddress.Loopback.ToString(), _modifiedConfiguration.localPort);
-                    var downloadString = wc.DownloadString(item.url);
+                    var downloadString = await wc.DownloadStringTaskAsync(item.url);
                     wc.Dispose();
                     var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
                     var split = debase64.Split('\r', '\n');
@@ -139,7 +145,7 @@ public partial class SubscribeConfigForm : Form
                     }
                     if (lst.Any())
                     {
-                        _modifiedConfiguration.configs.RemoveAll(c => c.@group == item.name);
+                        _modifiedConfiguration.configs.RemoveAll(c => c.@group == oldNames[_lastSelectedIndex]);
                         _modifiedConfiguration.configs.AddRange(lst);
                     }
                     _controller.SaveServers(_modifiedConfiguration.configs, _modifiedConfiguration.localPort,_modifiedConfiguration.corePort);

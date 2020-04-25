@@ -380,7 +380,6 @@ partial class HotkeySettingsForm
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1236, 764);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Font = new System.Drawing.Font("Microsoft Yahei", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.MaximizeBox = false;
             this.MinimizeBox = false;

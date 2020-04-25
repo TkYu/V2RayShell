@@ -15,15 +15,19 @@ using V2RayShell.Services;
 
 namespace V2RayShell.View
 {
-    public partial class DownloadProgress : Form
+    public sealed partial class DownloadProgress : Form
     {
-        public DownloadProgress()
+        private readonly int act = 0;
+        public DownloadProgress(int action)
         {
             InitializeComponent();
             Icon = Resources.v2ray;
+            Font = Global.Font;
+            act = action;
         }
 
         private const string V2RAY_URL = "https://github.com/v2ray/v2ray-core/releases/latest";
+        public const string SHELL_URL = "https://github.com/TkYu/V2RayShell/releases/latest";
         //private const string V2RAY_URL = "https://github.com.cnpmjs.org/v2ray/v2ray-core/releases/latest";
 
         #region InvokeMethod
@@ -84,7 +88,7 @@ namespace V2RayShell.View
 
         #endregion
 
-        private async Task<string> GetVersion(string proxy = null)
+        private async Task<string> GetCoreVersion(string proxy = null)
         {
             if (proxy == null)
             {
@@ -131,18 +135,67 @@ namespace V2RayShell.View
             }
         }
 
-        private void DownloadProgress_Load(object sender, EventArgs e)
+        private async Task<string> GetVersion(string proxy = null)
+        {
+            try
+            {
+                var request = (HttpWebRequest) WebRequest.Create(proxy == null ? "https://github.com.cnpmjs.org/TkYu/V2RayShell/releases/latest" : SHELL_URL);
+                if (proxy != null) request.Proxy = new WebProxy(new Uri(proxy));
+                request.Timeout = 5000;
+                request.AllowAutoRedirect = false;
+                var response = await request.GetResponseAsync();
+                return response.Headers["Location"].Split('/').Last().TrimStart('v');
+            }
+            catch (Exception e)
+            {
+                Logging.LogUsefulException(e);
+                return null;
+            }
+        }
+
+        private async void DownloadProgress_Load(object sender, EventArgs e)
         {
             Text = I18N.GetString("Sit back and relax");
             ActiveControl = progressBar1;
-            //TODO
-            _ = DoUpdate();
-        }
-
-        private async Task DoUpdate()
-        {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//3072
+
+            #region G2G
+
+            if (act == 1)
+            {
+                if(await SelfUpdate())
+                    GoodBye(DialogResult.OK);
+                else
+                    GoodBye(DialogResult.Abort);
+            }
+            else if (act == 2)
+            {
+                if(await DoUpdate())
+                    GoodBye(DialogResult.OK);
+                else
+                    GoodBye(DialogResult.Abort);
+            }
+            else
+            {
+                if (!await DoUpdate())
+                {
+                    GoodBye(DialogResult.Abort);
+                    return;
+                }
+                if (!await SelfUpdate())
+                {
+                    GoodBye(DialogResult.Abort);
+                    return;
+                }
+                GoodBye(DialogResult.OK);
+            }
+
+            #endregion
+        }
+
+        private async Task<bool> SelfUpdate()
+        {
             ChangeProgress(999);
             ChangeText(I18N.GetString("Get latest version..."));
             var newVersion = await GetVersion();
@@ -152,12 +205,122 @@ namespace V2RayShell.View
                 proxy = Microsoft.VisualBasic.Interaction.InputBox(I18N.GetString("We need a proxy to download v2ray core"), "Yo", "http://127.0.0.1:1080");
                 if (Uri.IsWellFormedUriString(proxy,UriKind.Absolute)) newVersion = await GetVersion(proxy);
             }
+            if (string.IsNullOrEmpty(newVersion))
+            {
+                System.Diagnostics.Process.Start(SHELL_URL);
+                return false;
+            }
+            ChangeText(I18N.GetString("Upgrade {0} to {1} ...",Global.Version,newVersion));
+            var webClient = new WebClient();
+            if(!string.IsNullOrEmpty(proxy) && Uri.IsWellFormedUriString(proxy,UriKind.Absolute))
+                webClient.Proxy = new WebProxy(new Uri(proxy));
+            webClient.DownloadProgressChanged += (s, e) =>
+            {
+                ChangeProgress(e.ProgressPercentage);
+            };
+            var fileName = Utils.GetTempPath(Guid.NewGuid().ToString("N"));
+            var downloadURL = $"https://github.wuyanzheshui.workers.dev/TkYu/V2RayShell/releases/download/v{newVersion}/V2RayShell{newVersion}.zip";
+            ChangeTitle(I18N.GetString("Sit back and relax") + " " + I18N.GetString("Upgrade {0} to {1} ...", Global.Version, newVersion));
+            ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
+            try
+            {
+                webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36");
+                await webClient.DownloadFileTaskAsync(downloadURL, fileName);
+            }
+            catch
+            {
+                if (File.Exists(fileName)) File.Delete(fileName);
+            }
+            if (!File.Exists(fileName))
+            {
+                downloadURL = $"https://release.fastgit.org/TkYu/V2RayShell/releases/download/v{newVersion}/V2RayShell{newVersion}.zip";
+                ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
+                try
+                {
+                    await webClient.DownloadFileTaskAsync(downloadURL, fileName);
+                }
+                catch
+                {
+                    if (File.Exists(fileName)) File.Delete(fileName);
+                }
+            }
+            if (!File.Exists(fileName))
+            {
+                downloadURL = $"https://github.com/TkYu/V2RayShell/releases/download/v{newVersion}/V2RayShell{newVersion}.zip";
+                ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
+                try
+                {
+                    await webClient.DownloadFileTaskAsync(downloadURL, fileName);
+                }
+                catch
+                {
+                    if (File.Exists(fileName)) File.Delete(fileName);
+                }
+            }
+            if (!File.Exists(fileName))
+            {
+                return false;
+            }
+            ChangeProgress(100);
+            ChangeText(newVersion + I18N.GetString("Extracting..."));
+            var tempfile = Utils.GetTempPath(Guid.NewGuid().ToString("N"));
+            try
+            {
+                using (var archive = ZipFile.OpenRead(fileName))
+                {
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        if (entry.FullName.ToLower() == "v2rayshell.exe")
+                        {
+                            entry.ExtractToFile(tempfile, true);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logging.LogUsefulException(e);
+                if (File.Exists(tempfile)) File.Delete(tempfile);
+                return false;
+            }
+            finally
+            {
+                File.Delete(fileName);
+            }
+            if (File.Exists(tempfile))
+            {
+                Program.ViewControllerInstance.HideTray();
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    Arguments = $"/C @echo off & Title Updating... & echo {I18N.GetString("Sit back and relax")} & taskkill /f /im {System.Diagnostics.Process.GetCurrentProcess().ProcessName}.exe & choice /C Y /N /D Y /T 1 & Del \"{Global.ProcessPath}\" & Move /y \"{tempfile}\" \"{Global.ProcessPath}\" & Start \"\" \"{Global.ProcessPath}\"",
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    FileName = "cmd.exe"
+                };
+                System.Diagnostics.Process.Start(psi);
+                Environment.Exit(0);
+            }
+            return true;
+        }
+
+        private async Task<bool> DoUpdate()
+        {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//3072
+            ChangeProgress(999);
+            ChangeText(I18N.GetString("Get latest version..."));
+            var newVersion = await GetCoreVersion();
+            string proxy = null;
+            if (string.IsNullOrEmpty(newVersion))
+            {
+                proxy = Microsoft.VisualBasic.Interaction.InputBox(I18N.GetString("We need a proxy to download v2ray core"), "Yo", "http://127.0.0.1:1080");
+                if (Uri.IsWellFormedUriString(proxy,UriKind.Absolute)) newVersion = await GetCoreVersion(proxy);
+            }
 
             if (string.IsNullOrEmpty(newVersion))
             {
                 System.Diagnostics.Process.Start(V2RAY_URL);
-                GoodBye(DialogResult.Abort);
-                return;
+                return false;
             }
 
             ChangeText(I18N.GetString("Upgrade {0} to {1} ...",V2Ray.Version?.ToString()??"0.0.0",newVersion));
@@ -174,7 +337,32 @@ namespace V2RayShell.View
             if (!string.IsNullOrEmpty(proxy)) downloadURL = $"https://github.com/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
             ChangeTitle(I18N.GetString("Sit back and relax") + " " + I18N.GetString("Upgrade {0} to {1} ...", V2Ray.Version?.ToString() ?? "0.0.0", newVersion));
             ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
-            await webClient.DownloadFileTaskAsync(downloadURL, fileName);
+            try
+            {
+                await webClient.DownloadFileTaskAsync(downloadURL, fileName);
+            }
+            catch (Exception e)
+            {
+                Logging.LogUsefulException(e);
+                if (File.Exists(fileName)) File.Delete(fileName);
+            }
+            if (!File.Exists(fileName))
+            {
+                downloadURL = $"https://release.fastgit.org/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
+                ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
+                try
+                {
+                    await webClient.DownloadFileTaskAsync(downloadURL, fileName);
+                }
+                catch
+                {
+                    if (File.Exists(fileName)) File.Delete(fileName);
+                }
+            }
+            if (!File.Exists(fileName))
+            {
+                return false;
+            }
             ChangeProgress(100);
             ChangeText(newVersion + I18N.GetString("Extracting..."));
             try
@@ -205,14 +393,13 @@ namespace V2RayShell.View
             catch (Exception e)
             {
                 Logging.LogUsefulException(e);
-                GoodBye(DialogResult.Abort);
-                return;
+                return false;
             }
             finally
             {
                 File.Delete(fileName);
             }
-            GoodBye(DialogResult.OK);
+            return true;
         }
     }
 

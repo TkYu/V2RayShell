@@ -37,6 +37,7 @@ namespace V2RayShell.View
 
         private void UpdateTexts()
         {
+            Font = Global.Font;
             AddButton.Text = I18N.GetString("&Add");
             DeleteButton.Text = I18N.GetString("&Delete");
             DuplicateButton.Text = I18N.GetString("Dupli&cate");
@@ -91,11 +92,11 @@ namespace V2RayShell.View
                 CorePortNum.Value = _modifiedConfiguration.corePort;
 
                 IPTextBox.Text = server.add;
-                ServerPortNum.Value = server.port;
+                ServerPortText.Text = server.port.ToString();
                 IDTextBox.Text = server.id;
                 TPSelect.SelectedItem = server.net ?? "tcp";
                 CTSelect.SelectedItem = server.type ?? "none";
-                AlterIdNum.Value = server.aid;
+                AlterIdText.Text = server.aid.ToString();
                 CDTextBox.Text = server.host;
                 PathTextBox.Text = server.path;
                 RemarksTextBox.Text = server.ps;
@@ -144,8 +145,8 @@ namespace V2RayShell.View
 
                 var old = _modifiedConfiguration.configs[_lastSelectedIndex];
 
-                server.port = (int) ServerPortNum.Value;
-                server.aid = (int) AlterIdNum.Value;
+                server.port = int.Parse(ServerPortText.Text);
+                server.aid = int.Parse(AlterIdText.Text);
 
                 server.ps = RemarksTextBox.Text;
                 server.id = IDTextBox.Text;
@@ -315,6 +316,11 @@ namespace V2RayShell.View
             controller.SaveServers(_modifiedConfiguration.configs, _modifiedConfiguration.localPort,_modifiedConfiguration.corePort);
             await controller.SelectServerIndex(ServersListBox.SelectedIndex);
             Close();
+        }
+
+        private void OnlyAllowDigit_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
         }
     }
 }

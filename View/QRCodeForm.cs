@@ -14,7 +14,7 @@ using ZXing.QrCode.Internal;
 
 namespace V2RayShell.View
 {
-    public partial class QRCodeForm : Form
+    public sealed partial class QRCodeForm : Form
     {
         private string code;
 
@@ -25,6 +25,7 @@ namespace V2RayShell.View
             this.Icon = Resources.v2ray;
             // ReSharper disable once VirtualMemberCallInConstructor
             Text = I18N.GetString("Sit back and relax");
+            Font = Global.Font;
             Enabled = false;
         }
 

@@ -21,7 +21,7 @@ namespace V2RayShell
         {
             try
             {
-                LogFilePath = Utils.GetTempPath("V2RayShell.log");
+                LogFilePath = Utils.GetTempPath($"V2RayShell_{Global.PathHash}.log");
 
                 _fs = new FileStream(LogFilePath, FileMode.Append);
                 _sw = new StreamWriterWithTimestamp(_fs) {AutoFlush = true};
