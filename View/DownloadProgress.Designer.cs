@@ -46,16 +46,16 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 73.02631F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 26.97368F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(843, 161);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(769, 159);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // progressBar1
             // 
             this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.progressBar1.Location = new System.Drawing.Point(3, 120);
+            this.progressBar1.Location = new System.Drawing.Point(3, 119);
             this.progressBar1.MarqueeAnimationSpeed = 50;
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(837, 38);
+            this.progressBar1.Size = new System.Drawing.Size(763, 37);
             this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.progressBar1.TabIndex = 0;
             // 
@@ -66,14 +66,14 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(837, 111);
+            this.textBox1.Size = new System.Drawing.Size(763, 110);
             this.textBox1.TabIndex = 1;
             // 
             // DownloadProgress
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 28F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(843, 161);
+            this.ClientSize = new System.Drawing.Size(769, 159);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "DownloadProgress";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
