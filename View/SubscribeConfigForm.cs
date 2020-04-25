@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using V2RayShell.Model;
@@ -63,6 +64,7 @@ public partial class SubscribeConfigForm : Form
             if (_lastSelectedIndex < 0 || _lastSelectedIndex >= SubscribeListBox.Items.Count)
             {
                 _lastSelectedIndex = -1;
+                AddButton_Click(this,null);
             }
             SubscribeListBox.SelectedIndex = _lastSelectedIndex;
             LoadSelectedItem();
@@ -132,15 +134,30 @@ public partial class SubscribeConfigForm : Form
                     if (item.useProxy) wc.Proxy = new WebProxy(IPAddress.Loopback.ToString(), _modifiedConfiguration.localPort);
                     var downloadString = await wc.DownloadStringTaskAsync(item.url);
                     wc.Dispose();
-                    var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
-                    var split = debase64.Split('\r', '\n');
                     var lst = new List<ServerObject>();
-                    foreach (var s in split)
+                    if (downloadString.Contains("vmess://"))
                     {
-                        if (ServerObject.TryParse(s, out ServerObject svc))
+                        var mcg = Regex.Matches(downloadString, @"vmess://(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace);
+                        foreach (Match s in mcg)
                         {
-                            svc.@group = item.name;
-                            lst.Add(svc);
+                            if (ServerObject.TryParse(s.Value, out ServerObject svc))
+                            {
+                                svc.@group = item.name;
+                                lst.Add(svc);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
+                        var split = debase64.Split('\r', '\n');
+                        foreach (var s in split)
+                        {
+                            if (ServerObject.TryParse(s, out ServerObject svc))
+                            {
+                                svc.@group = item.name;
+                                lst.Add(svc);
+                            }
                         }
                     }
                     if (lst.Any())
@@ -160,7 +177,7 @@ public partial class SubscribeConfigForm : Form
 
         private void AddButton_Click(object sender, EventArgs e)
         {
-            var item = new SubscribeConfig{name = "New"};
+            var item = new SubscribeConfig{name = I18N.GetString("Subscribe Name")};
             _modifiedConfiguration.subscribes.Add(item);
             LoadConfiguration(_modifiedConfiguration);
             SubscribeListBox.SelectedIndex = _modifiedConfiguration.subscribes.Count - 1;

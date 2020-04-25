@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using V2RayShell.Model;
@@ -464,15 +465,30 @@ namespace V2RayShell.Services
                 if (item.useProxy) wc.Proxy = new System.Net.WebProxy(System.Net.IPAddress.Loopback.ToString(), config.localPort);
                 var downloadString = await wc.DownloadStringTaskAsync(item.url);
                 wc.Dispose();
-                var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
-                var split = debase64.Split('\r', '\n');
                 var lst = new List<ServerObject>();
-                foreach (var s in split)
+                if (downloadString.Contains("vmess://"))
                 {
-                    if (ServerObject.TryParse(s, out ServerObject svc))
+                    var mcg = Regex.Matches(downloadString, @"vmess://(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace);
+                    foreach (Match s in mcg)
                     {
-                        svc.@group = item.name;
-                        lst.Add(svc);
+                        if (ServerObject.TryParse(s.Value, out ServerObject svc))
+                        {
+                            svc.@group = item.name;
+                            lst.Add(svc);
+                        }
+                    }
+                }
+                else
+                {
+                    var debase64 = Encoding.UTF8.GetString(Convert.FromBase64String(downloadString));
+                    var split = debase64.Split('\r', '\n');
+                    foreach (var s in split)
+                    {
+                        if (ServerObject.TryParse(s, out ServerObject svc))
+                        {
+                            svc.@group = item.name;
+                            lst.Add(svc);
+                        }
                     }
                 }
                 if (lst.Any())
