@@ -512,6 +512,7 @@ namespace V2RayShell.Services
             }
             controller.SaveServers(config.configs, config.localPort,config.corePort);
             var after = config.configs.Count(c => !string.IsNullOrEmpty(c.@group));
+            if (before != after) RebuildMenu();
             ShowBalloonTip(I18N.GetString("Update finished"), I18N.GetString("{0} before, {1} after.", before, after));
             subscribeUpdateItem.Enabled = true;
         }
