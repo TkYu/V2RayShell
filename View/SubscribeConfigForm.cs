@@ -48,7 +48,7 @@ public partial class SubscribeConfigForm : Form
             UseProxyCheckBox.Text = I18N.GetString("UseProxy");
             OKButton.Text = I18N.GetString("OK");
             MyCancelButton.Text = I18N.GetString("Cancel");
-            this.Text = I18N.GetString("Edit Subscriptions");
+            Text = I18N.GetString("Edit Subscriptions");
         }
 
         private void controller_ConfigChanged(object sender, EventArgs e)
@@ -63,8 +63,8 @@ public partial class SubscribeConfigForm : Form
             _lastSelectedIndex = _modifiedConfiguration.subscribes.Count-1;
             if (_lastSelectedIndex < 0 || _lastSelectedIndex >= SubscribeListBox.Items.Count)
             {
-                _lastSelectedIndex = -1;
                 AddButton_Click(this,null);
+                _lastSelectedIndex = 0;
             }
             SubscribeListBox.SelectedIndex = _lastSelectedIndex;
             LoadSelectedItem();
@@ -126,12 +126,17 @@ public partial class SubscribeConfigForm : Form
 
             try
             {
+                var currentSvc = _controller.GetCurrentServer();
                 _controller.SaveSubscribes(_modifiedConfiguration.subscribes);
                 if (_lastSelectedIndex > -1)
                 {
                     var item = _modifiedConfiguration.subscribes[_lastSelectedIndex];
                     var wc = new WebClient();
                     if (item.useProxy) wc.Proxy = new WebProxy(IPAddress.Loopback.ToString(), _modifiedConfiguration.localPort);
+                    var cts = new System.Threading.CancellationTokenSource();
+                    // ReSharper disable once AccessToDisposedClosure
+                    cts.Token.Register(() => wc?.CancelAsync());
+                    cts.CancelAfter(10000);
                     var downloadString = await wc.DownloadStringTaskAsync(item.url);
                     wc.Dispose();
                     var lst = new List<ServerObject>();
@@ -165,8 +170,13 @@ public partial class SubscribeConfigForm : Form
                         _modifiedConfiguration.configs.RemoveAll(c => c.@group == oldNames[_lastSelectedIndex]);
                         _modifiedConfiguration.configs.AddRange(lst);
                     }
-                    _controller.SaveServers(_modifiedConfiguration.configs, _modifiedConfiguration.localPort,_modifiedConfiguration.corePort);
                 }
+                _controller.SaveServers(_modifiedConfiguration.configs, _modifiedConfiguration.localPort, _modifiedConfiguration.corePort);
+                var newIdx = _modifiedConfiguration.configs.IndexOf(currentSvc);
+                if (newIdx == -1)
+                    await _controller.SelectServerIndex(0);
+                else if (newIdx != _modifiedConfiguration.index)
+                    await _controller.SelectServerIndex(newIdx);
             }
             catch (Exception exception)
             {

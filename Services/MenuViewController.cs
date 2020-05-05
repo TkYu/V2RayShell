@@ -463,7 +463,20 @@ namespace V2RayShell.Services
             {
                 var wc = new System.Net.WebClient();
                 if (item.useProxy) wc.Proxy = new System.Net.WebProxy(System.Net.IPAddress.Loopback.ToString(), config.localPort);
-                var downloadString = await wc.DownloadStringTaskAsync(item.url);
+                var cts = new System.Threading.CancellationTokenSource();
+                // ReSharper disable once AccessToDisposedClosure
+                // ReSharper disable once ConvertToLambdaExpressionWhenPossible
+                cts.Token.Register(() => { wc?.CancelAsync(); });
+                cts.CancelAfter(10000);
+                string downloadString;
+                try
+                {
+                    downloadString = await wc.DownloadStringTaskAsync(item.url);
+                }
+                catch //TODO maybe we can notify?
+                {
+                    continue;
+                }
                 wc.Dispose();
                 var lst = new List<ServerObject>();
                 if (downloadString.Contains("vmess://"))

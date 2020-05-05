@@ -214,6 +214,8 @@ namespace V2RayShell.View
             var webClient = new WebClient();
             if(!string.IsNullOrEmpty(proxy) && Uri.IsWellFormedUriString(proxy,UriKind.Absolute))
                 webClient.Proxy = new WebProxy(new Uri(proxy));
+            var cts = new System.Threading.CancellationTokenSource();
+            cts.Token.Register(() => webClient.CancelAsync());
             webClient.DownloadProgressChanged += (s, e) =>
             {
                 ChangeProgress(e.ProgressPercentage);
@@ -225,6 +227,7 @@ namespace V2RayShell.View
             try
             {
                 webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36");
+                cts.CancelAfter(10000);
                 await webClient.DownloadFileTaskAsync(downloadURL, fileName);
             }
             catch
@@ -237,6 +240,7 @@ namespace V2RayShell.View
                 ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
                 try
                 {
+                    cts.CancelAfter(10000);
                     await webClient.DownloadFileTaskAsync(downloadURL, fileName);
                 }
                 catch
@@ -327,6 +331,8 @@ namespace V2RayShell.View
             WebClient webClient = new WebClient();
             if(!string.IsNullOrEmpty(proxy) && Uri.IsWellFormedUriString(proxy,UriKind.Absolute))
                 webClient.Proxy = new WebProxy(new Uri(proxy));
+            var cts = new System.Threading.CancellationTokenSource();
+            cts.Token.Register(() => webClient.CancelAsync());
             webClient.DownloadProgressChanged += (s, e) =>
             {
                 ChangeProgress(e.ProgressPercentage);
@@ -339,6 +345,7 @@ namespace V2RayShell.View
             ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
             try
             {
+                cts.CancelAfter(20000);
                 await webClient.DownloadFileTaskAsync(downloadURL, fileName);
             }
             catch (Exception e)
@@ -352,6 +359,7 @@ namespace V2RayShell.View
                 ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
                 try
                 {
+                    //cts.CancelAfter(20000);
                     await webClient.DownloadFileTaskAsync(downloadURL, fileName);
                 }
                 catch
