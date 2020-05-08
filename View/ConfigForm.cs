@@ -145,7 +145,17 @@ namespace V2RayShell.View
 
                 var old = _modifiedConfiguration.configs[_lastSelectedIndex];
 
-                server.port = int.Parse(ServerPortText.Text);
+                if (int.TryParse(ServerPortText.Text, out var port) && port > 0 && port < 65536)
+                {
+                    server.port = port;
+                }
+                else
+                {
+                    MessageBox.Show(I18N.GetString("Port out of range"));
+                    ServerPortText.Focus();
+                    return false;
+                }
+
                 server.aid = int.Parse(AlterIdText.Text);
 
                 server.ps = RemarksTextBox.Text;
