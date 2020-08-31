@@ -28,7 +28,9 @@ namespace V2RayShell.View
 
         private const string V2RAY_URL = "https://github.com/v2ray/v2ray-core/releases/latest";
         public const string SHELL_URL = "https://github.com/TkYu/V2RayShell/releases/latest";
-        //private const string V2RAY_URL = "https://github.com.cnpmjs.org/v2ray/v2ray-core/releases/latest";
+        private const string V2RAY_CNPMJS_URL = "https://github.com.cnpmjs.org/v2ray/v2ray-core/releases/latest";
+        private const string V2RAY_FASTGIT_URL = "https://hub.fastgit.org/v2ray/v2ray-core/releases/latest";
+        private const string SHELL_CNPMJS_URL = "https://github.com.cnpmjs.org/TkYu/V2RayShell/releases/latest";
 
         #region InvokeMethod
 
@@ -90,48 +92,31 @@ namespace V2RayShell.View
 
         private async Task<string> GetCoreVersion(string proxy = null)
         {
-            if (proxy == null)
+            if (!string.IsNullOrEmpty(proxy))
+                return await GetCoreVersion(V2RAY_URL, proxy);
+            var ret = await GetCoreVersion(V2RAY_CNPMJS_URL, null);
+            if (string.IsNullOrEmpty(ret))
+                return await GetCoreVersion(V2RAY_FASTGIT_URL, null);
+            if (string.IsNullOrEmpty(ret))
+                return await GetCoreVersion(V2RAY_URL, null);
+            return ret;
+        }
+
+        private async Task<string> GetCoreVersion(string entry,string proxy)
+        {
+            try
             {
-                try
-                {
-                    var regx = new System.Text.RegularExpressions.Regex(@"<a href=""/v2ray/dist/releases/tag/(.*?)"">(.*?)</a>",System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
-                    var request = (HttpWebRequest)WebRequest.Create("https://github.com.cnpmjs.org/v2ray/dist/releases");
-                    request.Timeout = 5000;
-                    request.AllowAutoRedirect = true;
-                    var response = await request.GetResponseAsync();
-                    using (var sr = new StreamReader(response.GetResponseStream() ?? throw new InvalidOperationException()))
-                    {
-                        var responseBody = await sr.ReadToEndAsync();
-                        if (regx.IsMatch(responseBody))
-                        {
-                            var mc = regx.Matches(responseBody);
-                            return mc[0].Groups[1].Value.TrimStart('v');
-                        }
-                        return null;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logging.LogUsefulException(e);
-                    return null;
-                }
+                var request = (HttpWebRequest)WebRequest.Create(entry);
+                if(!string.IsNullOrEmpty(proxy))request.Proxy = new WebProxy(new Uri(proxy));
+                request.Timeout = 5000;
+                request.AllowAutoRedirect = false;
+                var response = await request.GetResponseAsync();
+                return response.Headers["Location"].Split('/').Last().TrimStart('v');
             }
-            else
+            catch (Exception e)
             {
-                try
-                {
-                    var request = (HttpWebRequest)WebRequest.Create(V2RAY_URL);
-                    request.Proxy = new WebProxy(new Uri(proxy));
-                    request.Timeout = 5000;
-                    request.AllowAutoRedirect = false;
-                    var response = await request.GetResponseAsync();
-                    return response.Headers["Location"].Split('/').Last().TrimStart('v');
-                }
-                catch (Exception e)
-                {
-                    Logging.LogUsefulException(e);
-                    return null;
-                }
+                Logging.LogUsefulException(e);
+                return null;
             }
         }
 
@@ -139,7 +124,7 @@ namespace V2RayShell.View
         {
             try
             {
-                var request = (HttpWebRequest) WebRequest.Create(proxy == null ? "https://github.com.cnpmjs.org/TkYu/V2RayShell/releases/latest" : SHELL_URL);
+                var request = (HttpWebRequest) WebRequest.Create(proxy == null ? SHELL_CNPMJS_URL : SHELL_URL);
                 if (proxy != null) request.Proxy = new WebProxy(new Uri(proxy));
                 request.Timeout = 5000;
                 request.AllowAutoRedirect = false;
@@ -236,7 +221,7 @@ namespace V2RayShell.View
             }
             if (!File.Exists(fileName))
             {
-                downloadURL = $"https://release.fastgit.org/TkYu/V2RayShell/releases/download/v{newVersion}/V2RayShell{newVersion}.zip";
+                downloadURL = $"https://download.fastgit.org/TkYu/V2RayShell/releases/download/v{newVersion}/V2RayShell{newVersion}.zip";
                 ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
                 try
                 {
@@ -329,7 +314,8 @@ namespace V2RayShell.View
 
             ChangeText(I18N.GetString("Upgrade {0} to {1} ...",V2Ray.Version?.ToString()??"0.0.0",newVersion));
             WebClient webClient = new WebClient();
-            if(!string.IsNullOrEmpty(proxy) && Uri.IsWellFormedUriString(proxy,UriKind.Absolute))
+            webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36");
+            if (!string.IsNullOrEmpty(proxy) && Uri.IsWellFormedUriString(proxy,UriKind.Absolute))
                 webClient.Proxy = new WebProxy(new Uri(proxy));
             var cts = new System.Threading.CancellationTokenSource();
             cts.Token.Register(() => webClient.CancelAsync());
@@ -339,13 +325,13 @@ namespace V2RayShell.View
                 //ChangeText(newVersion + I18N.GetString("Downloading...") + $" {e.ProgressPercentage}%");
             };
             var fileName = Utils.GetTempPath(Guid.NewGuid().ToString("N"));
-            var downloadURL = $"https://cdn.jsdelivr.net/gh/v2ray/dist@{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";//God Bless You
+            var downloadURL = $"https://download.fastgit.org/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
             if (!string.IsNullOrEmpty(proxy)) downloadURL = $"https://github.com/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
             ChangeTitle(I18N.GetString("Sit back and relax") + " " + I18N.GetString("Upgrade {0} to {1} ...", V2Ray.Version?.ToString() ?? "0.0.0", newVersion));
             ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
             try
             {
-                cts.CancelAfter(20000);
+                cts.CancelAfter(30000);
                 await webClient.DownloadFileTaskAsync(downloadURL, fileName);
             }
             catch (Exception e)
@@ -355,11 +341,24 @@ namespace V2RayShell.View
             }
             if (!File.Exists(fileName))
             {
-                downloadURL = $"https://release.fastgit.org/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
+                downloadURL = $"https://github.wuyanzheshui.workers.dev/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
                 ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
                 try
                 {
-                    //cts.CancelAfter(20000);
+                    cts.CancelAfter(60000);
+                    await webClient.DownloadFileTaskAsync(downloadURL, fileName);
+                }
+                catch
+                {
+                    if (File.Exists(fileName)) File.Delete(fileName);
+                }
+            }
+            if (!File.Exists(fileName))
+            {
+                downloadURL = $"https://github.com/v2ray/v2ray-core/releases/download/v{newVersion}/v2ray-windows-{(Environment.Is64BitOperatingSystem ? "64" : "32")}.zip";
+                ChangeText(I18N.GetString("Downloading file from {0}, You can download it manually and extract to same folder.", downloadURL));
+                try
+                {
                     await webClient.DownloadFileTaskAsync(downloadURL, fileName);
                 }
                 catch

@@ -773,12 +773,18 @@ namespace V2RayShell.Services
 
             Configuration configuration = controller.GetConfigurationCopy();
             var grp = configuration.configs.GroupBy(c => c.@group).ToArray();
+            var idx = new Dictionary<int,int>();
+            for (var j = 0; j < configuration.configs.Count; j++)
+            {
+                var configurationConfig = configuration.configs[j];
+                idx.Add(configurationConfig.GetHashCode(),j);
+            }
             var defaultGroup = grp.Single(c => string.IsNullOrEmpty(c.Key)).ToArray();
             var otherGroup = grp.Where(c => !string.IsNullOrEmpty(c.Key)).ToArray();
             foreach (var server in defaultGroup)
             {
                 MenuItem item = new MenuItem(server.ps);
-                item.Tag = i;
+                item.Tag = idx[server.GetHashCode()];
                 item.Click += AServerItem_Click;
                 items.Add(i, item);
                 i++;
@@ -795,7 +801,7 @@ namespace V2RayShell.Services
                     foreach (var server in group)
                     {
                         MenuItem item = new MenuItem(server.ps);
-                        item.Tag = i - 1;//remove seperator
+                        item.Tag = idx[server.GetHashCode()];//remove seperator
                         item.Click += AServerItem_Click;
                         grpItem.MenuItems.Add(item);
                         i++;
