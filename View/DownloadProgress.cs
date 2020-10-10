@@ -26,11 +26,6 @@ namespace V2RayShell.View
             act = action;
         }
 
-        private const string V2RAY_URL = "https://github.com/v2ray/v2ray-core/releases/latest";
-        public const string SHELL_URL = "https://github.com/TkYu/V2RayShell/releases/latest";
-        private const string V2RAY_CNPMJS_URL = "https://github.com.cnpmjs.org/v2ray/v2ray-core/releases/latest";
-        private const string V2RAY_FASTGIT_URL = "https://hub.fastgit.org/v2ray/v2ray-core/releases/latest";
-        private const string SHELL_CNPMJS_URL = "https://github.com.cnpmjs.org/TkYu/V2RayShell/releases/latest";
 
         #region InvokeMethod
 
@@ -90,53 +85,6 @@ namespace V2RayShell.View
 
         #endregion
 
-        private async Task<string> GetCoreVersion(string proxy = null)
-        {
-            if (!string.IsNullOrEmpty(proxy))
-                return await GetCoreVersion(V2RAY_URL, proxy);
-            var ret = await GetCoreVersion(V2RAY_CNPMJS_URL, null);
-            if (string.IsNullOrEmpty(ret))
-                return await GetCoreVersion(V2RAY_FASTGIT_URL, null);
-            if (string.IsNullOrEmpty(ret))
-                return await GetCoreVersion(V2RAY_URL, null);
-            return ret;
-        }
-
-        private async Task<string> GetCoreVersion(string entry,string proxy)
-        {
-            try
-            {
-                var request = (HttpWebRequest)WebRequest.Create(entry);
-                if(!string.IsNullOrEmpty(proxy))request.Proxy = new WebProxy(new Uri(proxy));
-                request.Timeout = 5000;
-                request.AllowAutoRedirect = false;
-                var response = await request.GetResponseAsync();
-                return response.Headers["Location"].Split('/').Last().TrimStart('v');
-            }
-            catch (Exception e)
-            {
-                Logging.LogUsefulException(e);
-                return null;
-            }
-        }
-
-        private async Task<string> GetVersion(string proxy = null)
-        {
-            try
-            {
-                var request = (HttpWebRequest) WebRequest.Create(proxy == null ? SHELL_CNPMJS_URL : SHELL_URL);
-                if (proxy != null) request.Proxy = new WebProxy(new Uri(proxy));
-                request.Timeout = 5000;
-                request.AllowAutoRedirect = false;
-                var response = await request.GetResponseAsync();
-                return response.Headers["Location"].Split('/').Last().TrimStart('v');
-            }
-            catch (Exception e)
-            {
-                Logging.LogUsefulException(e);
-                return null;
-            }
-        }
 
         private async void DownloadProgress_Load(object sender, EventArgs e)
         {
@@ -183,16 +131,16 @@ namespace V2RayShell.View
         {
             ChangeProgress(999);
             ChangeText(I18N.GetString("Get latest version..."));
-            var newVersion = await GetVersion();
+            var newVersion = await UpdateChecker.GetVersion();
             string proxy = null;
             if (string.IsNullOrEmpty(newVersion))
             {
                 proxy = Microsoft.VisualBasic.Interaction.InputBox(I18N.GetString("We need a proxy to download v2ray core"), "Yo", "http://127.0.0.1:1080");
-                if (Uri.IsWellFormedUriString(proxy,UriKind.Absolute)) newVersion = await GetVersion(proxy);
+                if (Uri.IsWellFormedUriString(proxy,UriKind.Absolute)) newVersion = await UpdateChecker.GetVersion(proxy);
             }
             if (string.IsNullOrEmpty(newVersion))
             {
-                System.Diagnostics.Process.Start(SHELL_URL);
+                System.Diagnostics.Process.Start(UpdateChecker.SHELL_URL);
                 return false;
             }
             ChangeText(I18N.GetString("Upgrade {0} to {1} ...",Global.Version,newVersion));
@@ -298,17 +246,17 @@ namespace V2RayShell.View
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//3072
             ChangeProgress(999);
             ChangeText(I18N.GetString("Get latest version..."));
-            var newVersion = await GetCoreVersion();
+            var newVersion = await UpdateChecker.GetCoreVersion();
             string proxy = null;
             if (string.IsNullOrEmpty(newVersion))
             {
                 proxy = Microsoft.VisualBasic.Interaction.InputBox(I18N.GetString("We need a proxy to download v2ray core"), "Yo", "http://127.0.0.1:1080");
-                if (Uri.IsWellFormedUriString(proxy,UriKind.Absolute)) newVersion = await GetCoreVersion(proxy);
+                if (Uri.IsWellFormedUriString(proxy,UriKind.Absolute)) newVersion = await UpdateChecker.GetCoreVersion(proxy);
             }
 
             if (string.IsNullOrEmpty(newVersion))
             {
-                System.Diagnostics.Process.Start(V2RAY_URL);
+                System.Diagnostics.Process.Start(UpdateChecker.V2RAY_URL);
                 return false;
             }
 

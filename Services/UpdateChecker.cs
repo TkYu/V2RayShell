@@ -12,8 +12,12 @@ namespace V2RayShell.Services
 {
     public class UpdateChecker
     {
-        public const string SHELL_URL = "https://github.com/TkYu/V2RayShell/releases/latest";
+
         public const string V2RAY_URL = "https://github.com/v2ray/v2ray-core/releases/latest";
+        public const string SHELL_URL = "https://github.com/TkYu/V2RayShell/releases/latest";
+        public const string V2RAY_CNPMJS_URL = "https://github.com.cnpmjs.org/v2ray/v2ray-core/releases/latest";
+        public const string V2RAY_FASTGIT_URL = "https://hub.fastgit.org/v2ray/v2ray-core/releases/latest";
+        public const string SHELL_CNPMJS_URL = "https://github.com.cnpmjs.org/TkYu/V2RayShell/releases/latest";
 
         public UpdateChecker()
         {
@@ -21,58 +25,41 @@ namespace V2RayShell.Services
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
-        private async Task<string> GetCoreVersion(string proxy = null)
+        public static async Task<string> GetCoreVersion(string proxy = null)
         {
-            if (proxy == null)
-            {
-                try
-                {
-                    var regx = new Regex(@"<a href=""/v2ray/dist/releases/tag/(.*?)"">(.*?)</a>",RegexOptions.IgnoreCase | RegexOptions.Singleline);
-                    var request = (HttpWebRequest)WebRequest.Create("https://github.com.cnpmjs.org/v2ray/dist/releases/latest");
-                    request.Timeout = 5000;
-                    request.AllowAutoRedirect = true;
-                    var response = await request.GetResponseAsync();
-                    using (var sr = new StreamReader(response.GetResponseStream() ?? throw new InvalidOperationException()))
-                    {
-                        var responseBody = await sr.ReadToEndAsync();
-                        if (regx.IsMatch(responseBody))
-                        {
-                            var mc = regx.Matches(responseBody);
-                            return mc[0].Groups[1].Value.TrimStart('v');
-                        }
-                        return null;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logging.LogUsefulException(e);
-                    return null;
-                }
-            }
-            else
-            {
-                try
-                {
-                    var request = (HttpWebRequest)WebRequest.Create(V2RAY_URL);
-                    request.Proxy = new WebProxy(new Uri(proxy));
-                    request.Timeout = 5000;
-                    request.AllowAutoRedirect = false;
-                    var response = await request.GetResponseAsync();
-                    return response.Headers["Location"].Split('/').Last().TrimStart('v');
-                }
-                catch (Exception e)
-                {
-                    Logging.LogUsefulException(e);
-                    return null;
-                }
-            }
+            if (!string.IsNullOrEmpty(proxy))
+                return await GetCoreVersion(V2RAY_URL, proxy);
+            var ret = await GetCoreVersion(V2RAY_CNPMJS_URL, null);
+            if (string.IsNullOrEmpty(ret))
+                return await GetCoreVersion(V2RAY_FASTGIT_URL, null);
+            if (string.IsNullOrEmpty(ret))
+                return await GetCoreVersion(V2RAY_URL, null);
+            return ret;
         }
 
-        private async Task<string> GetVersion(string proxy = null)
+        public static async Task<string> GetCoreVersion(string entry, string proxy)
         {
             try
             {
-                var request = (HttpWebRequest) WebRequest.Create(proxy == null ? "https://github.com.cnpmjs.org/TkYu/V2RayShell/releases/latest" : SHELL_URL);
+                var request = (HttpWebRequest)WebRequest.Create(entry);
+                if (!string.IsNullOrEmpty(proxy)) request.Proxy = new WebProxy(new Uri(proxy));
+                request.Timeout = 5000;
+                request.AllowAutoRedirect = false;
+                var response = await request.GetResponseAsync();
+                return response.Headers["Location"].Split('/').Last().TrimStart('v');
+            }
+            catch (Exception e)
+            {
+                Logging.LogUsefulException(e);
+                return null;
+            }
+        }
+
+        public static async Task<string> GetVersion(string proxy = null)
+        {
+            try
+            {
+                var request = (HttpWebRequest)WebRequest.Create(proxy == null ? SHELL_CNPMJS_URL : SHELL_URL);
                 if (proxy != null) request.Proxy = new WebProxy(new Uri(proxy));
                 request.Timeout = 5000;
                 request.AllowAutoRedirect = false;
