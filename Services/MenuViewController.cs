@@ -350,23 +350,21 @@ namespace V2RayShell.Services
             {
                 updateflag = 0;
                 var download = new DownloadProgress(1);
-                var dg = download.ShowDialog();
-                if (dg == DialogResult.Abort || dg == DialogResult.Cancel) MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                download.ShowDialog();
+                //if (dg == DialogResult.Abort || dg == DialogResult.Cancel) MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else if (updateflag == 2)
             {
                 updateflag = 0;
                 var download = new DownloadProgress(2);
-                var dg = download.ShowDialog();
-                if (dg == DialogResult.Abort || dg == DialogResult.Cancel) MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                download.ShowDialog();
                 controller.RestartCore();
             }
             else if (updateflag == 3)
             {
                 updateflag = 0;
                 var download = new DownloadProgress(3);
-                var dg = download.ShowDialog();
-                if (dg == DialogResult.Abort || dg == DialogResult.Cancel) MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                download.ShowDialog();
                 controller.RestartCore();
             }
         }
@@ -493,15 +491,22 @@ namespace V2RayShell.Services
                 }
                 else
                 {
-                    var debase64 = downloadString.DeBase64();
-                    var split = debase64.Split('\r', '\n');
-                    foreach (var s in split)
+                    try
                     {
-                        if (ServerObject.TryParse(s, out ServerObject svc))
+                        var debase64 = downloadString.DeBase64();
+                        var split = debase64.Split('\r', '\n');
+                        foreach (var s in split)
                         {
-                            svc.@group = item.name;
-                            lst.Add(svc);
+                            if (ServerObject.TryParse(s, out ServerObject svc))
+                            {
+                                svc.@group = item.name;
+                                lst.Add(svc);
+                            }
                         }
+                    }
+                    catch
+                    {
+                        MessageBox.Show(I18N.GetString("Invalid Base64 string."), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 if (lst.Any())

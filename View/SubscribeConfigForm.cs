@@ -154,15 +154,22 @@ public partial class SubscribeConfigForm : Form
                     }
                     else
                     {
-                        var debase64 = downloadString.DeBase64();
-                        var split = debase64.Split('\r', '\n');
-                        foreach (var s in split)
+                        try
                         {
-                            if (ServerObject.TryParse(s, out ServerObject svc))
+                            var debase64 = downloadString.DeBase64();
+                            var split = debase64.Split('\r', '\n');
+                            foreach (var s in split)
                             {
-                                svc.@group = item.name;
-                                lst.Add(svc);
+                                if (ServerObject.TryParse(s, out ServerObject svc))
+                                {
+                                    svc.@group = item.name;
+                                    lst.Add(svc);
+                                }
                             }
+                        }
+                        catch
+                        {
+                            MessageBox.Show(I18N.GetString("Invalid Base64 string."), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     if (lst.Any())

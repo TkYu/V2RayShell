@@ -56,7 +56,7 @@ namespace V2RayShell
 
         public static string Rfc4648Base64UrlDecode(this string str)
         {
-            str = str.Replace('-', '+').Replace('_', '/');
+            str = str.Replace("\r","").Replace("\n", "").Replace('-', '+').Replace('_', '/');
             switch (str.Length % 4)
             { // Pad with trailing '='s
                 case 0:
@@ -71,7 +71,7 @@ namespace V2RayShell
                     str += "=";
                     break;
                 default:
-                    throw new Exception("Invalid string.");
+                    throw new Exception("Invalid Base64 string.");
             }
             return str;
         }
@@ -110,7 +110,7 @@ namespace V2RayShell
             return null;
         }
 
-        public static int GetRandomPort(int start = 12468,int end = 22468)
+        public static int GetRandomPort(int start = 22468,int end = 32468)
         {//only check ipv4
             Logging.Info($"Checking Port {start} to {end}");
             var ports = Enumerable.Range(start, end - start + 1).ToArray();

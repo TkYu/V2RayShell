@@ -208,6 +208,7 @@ namespace V2RayShell.View
             var txt = Clipboard.GetText(TextDataFormat.Text);
             if (ServerObject.TryParse(txt, out var saba))
             {
+                saba.group = null;
                 _modifiedConfiguration.configs.Add(saba);
                 LoadConfiguration(_modifiedConfiguration);
                 ServersListBox.SelectedIndex = _modifiedConfiguration.configs.Count - 1;

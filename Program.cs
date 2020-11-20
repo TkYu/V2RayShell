@@ -65,10 +65,7 @@ namespace V2RayShell
                     var download = new DownloadProgress(2);
                     var result = download.ShowDialog();
                     if (result == DialogResult.Abort || result == DialogResult.Cancel)
-                    {
-                        MessageBox.Show(I18N.GetString("download fail!"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
-                    }
                     Logging.Info("V2RayCore version : " + V2Ray.Version);
                 }
 
